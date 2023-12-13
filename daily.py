@@ -2,6 +2,7 @@ import argparse
 import os
 import random
 import requests
+from openai import OpenAI
 from openai.api_resources.abstract.api_resource import APIResource
 from openai.api_resources import Image, Completion, PromptExplanation, Search
 
