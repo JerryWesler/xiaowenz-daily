@@ -1,8 +1,9 @@
 import argparse
 import os
 import random
-
-from openai import OpenAI
+import requests
+from openai.api_resources.abstract.api_resource import APIResource
+from openai.api_resources import Image, Completion, PromptExplanation, Search,
 
 import pendulum
 import requests
@@ -13,6 +14,40 @@ from quota import make_quota
 from todoist import make_todoist
 
 load_dotenv()
+
+# Here more of your code...
+
+# Then your CustomOpenAI class definition
+
+class CustomOpenAI:
+    def __init__(self, api_key, base_url):
+        self.api_key = api_key
+        self.base_url = base_url
+        self._api = APIResource(self.req, "")
+        # You can add other models here as the needs
+        self.images = Image(self.req, "images")
+        self.prompts_completions = Completion(self.req, "prompts/%s/completions")
+        self.searches = Search(self.req, "searches")
+        self.selections = Selection(self.req, "prompts/%s/selections")
+        self.prompt_explanations = PromptExplanation(self.req, "prompts/%s/explanations")
+
+    def req(self, method, path, params):
+        url = self.base_url + path
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+            "OpenAI-Version": "2022-03-01"
+            # Or set to your openai version
+        }
+
+        resp = requests.request(method, url, headers=headers,
+                                params=params, json=(None if method == 'get' else params))
+        resp_data = resp.json()
+        if resp.status_code not in range(200, 300):
+            # You can handle error here
+            pass
+
+        return resp_data, resp.status_code, resp.headers
 
 # required settings. config in github secrets
 # -------------
@@ -97,11 +132,7 @@ def make_pic_from_openai(sentence):
     """
     return the link formd
     """
-    # openai.api_key = OPENAI_API_KEY
-    client = OpenAI(
-        # defaults to os.environ.get("OPENAI_API_KEY")
-        api_key=OPENAI_API_KEY,
-    )
+    client = CustomOpenAI(api_key=OPENAI_API_KEY, base_url=OPENAI_PROXY_URL)
     print(f'calling open ai for image creation...')
     response = client.images.generate(
         prompt=sentence, n=1, size="1024x1024", model="dall-e-3", style="vivid")
@@ -110,17 +141,6 @@ def make_pic_from_openai(sentence):
     print(f'image_url:{image_url}')
     print(f'image_revised_prompt: {response.data[0].revised_prompt}')
     print(f'full response: {response}')
-    # s = requests.session()
-    # index = 0
-    # while os.path.exists(os.path.join(new_path, f"{index}.jpeg")):
-    #     index += 1
-    # with s.get(image_url, stream=True) as response:
-    #     # save response to file
-    #     response.raise_for_status()
-    #     with open(os.path.join(new_path, f"{index}.jpeg"), "wb") as output_file:
-    #         for chunk in response.iter_content(chunk_size=8192):
-    #             output_file.write(chunk)
-
     return image_url, "Image Powered by OpenAI DELL.E-3"
 
 # create pic from bing image generator
