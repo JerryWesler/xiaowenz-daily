@@ -3,7 +3,7 @@ import os
 import random
 import requests
 from openai.api_resources.abstract.api_resource import APIResource
-from openai.api_resources import Image, Completion, PromptExplanation, Search,
+from openai.api_resources import Image, Completion, PromptExplanation, Search
 
 import pendulum
 import requests
