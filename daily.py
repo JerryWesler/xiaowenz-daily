@@ -93,7 +93,8 @@ def get_poem():
 
 # create pic
 # return url, the image will not be save to local environment
-def make_pic_from_my_server(sentence):
+# use my own proxy url
+def make_pic_from_openai(sentence):
     PROXY_URL = os.environ['OPENAI_PROXY_URL']
     headers = {
         "Authorization": f"Bearer {OPENAI_API_KEY}",
