@@ -112,6 +112,8 @@ def make_pic_from_openai(sentence):
     response = requests.post(PROXY_URL, headers=headers, json=body)
 
     response_data = response.json()
+    print(f"Full response data: {response_data}")  # 打印完整的响应内容
+
     print(f'image_url:{response_data["data"][0]["url"]}')
     print(f'image_revised_prompt: {response_data["data"][0]["revised_prompt"]}')
     print(f'full response: {response_data}')
