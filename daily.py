@@ -3,8 +3,6 @@ import os
 import random
 import requests
 from openai import OpenAI
-from openai.api_resources.abstract.api_resource import APIResource
-from openai.api_resources import Image, Completion, PromptExplanation, Search
 
 import pendulum
 import requests
@@ -15,40 +13,6 @@ from quota import make_quota
 from todoist import make_todoist
 
 load_dotenv()
-
-# Here more of your code...
-
-# Then your CustomOpenAI class definition
-
-class CustomOpenAI:
-    def __init__(self, api_key, base_url):
-        self.api_key = api_key
-        self.base_url = base_url
-        self._api = APIResource(self.req, "")
-        # You can add other models here as the needs
-        self.images = Image(self.req, "images")
-        self.prompts_completions = Completion(self.req, "prompts/%s/completions")
-        self.searches = Search(self.req, "searches")
-        self.selections = Selection(self.req, "prompts/%s/selections")
-        self.prompt_explanations = PromptExplanation(self.req, "prompts/%s/explanations")
-
-    def req(self, method, path, params):
-        url = self.base_url + path
-        headers = {
-            "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json",
-            "OpenAI-Version": "2022-03-01"
-            # Or set to your openai version
-        }
-
-        resp = requests.request(method, url, headers=headers,
-                                params=params, json=(None if method == 'get' else params))
-        resp_data = resp.json()
-        if resp.status_code not in range(200, 300):
-            # You can handle error here
-            pass
-
-        return resp_data, resp.status_code, resp.headers
 
 # required settings. config in github secrets
 # -------------
@@ -129,23 +93,29 @@ def get_poem():
 
 # create pic
 # return url, the image will not be save to local environment
-def make_pic_from_openai(sentence):
-    """
-    return the link formd
-    """
-    client = CustomOpenAI(api_key=OPENAI_API_KEY, base_url=OPENAI_PROXY_URL)
-    print(f'calling open ai for image creation...')
-    response = client.images.generate(
-        prompt=sentence, n=1, size="1024x1024", model="dall-e-3", style="vivid")
+def make_pic_from_my_server(sentence):
+    PROXY_URL = os.environ['OPENAI_PROXY_URL']
+    headers = {
+        "Authorization": f"Bearer {OPENAI_API_KEY}",
+        "Content-Type": "application/json",
+    }
+    
+    body = {
+        "prompt":sentence, 
+        "n":1, 
+        "size":"1024x1024", 
+        "model":"dall-e-3", 
+        "style":"vivid"
+    }
+    
+    response = requests.post(PROXY_URL, headers=headers, json=body)
 
-    image_url = response.data[0].url
-    print(f'image_url:{image_url}')
-    print(f'image_revised_prompt: {response.data[0].revised_prompt}')
-    print(f'full response: {response}')
-    return image_url, "Image Powered by OpenAI DELL.E-3"
+    response_data = response.json()
+    print(f'image_url:{response_data["data"][0]["url"]}')
+    print(f'image_revised_prompt: {response_data["data"][0]["revised_prompt"]}')
+    print(f'full response: {response_data}')
 
-# create pic from bing image generator
-# once Dalle3 api is available, this might be retired.
+    return response_data["data"][0]["url"], "Image Powered by OpenAI DALL.E-3"
 
 
 def make_pic_from_bing(sentence, bing_cookie):
