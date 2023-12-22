@@ -118,8 +118,10 @@ def make_pic_from_openai(sentence):
     # print(f'image_revised_prompt: {response_data["data"][0]["revised_prompt"]}')
     # print(f'full response: {response_data}')
 
-    # return response_data["data"][0]["url"], "Image Powered by OpenAI DALL.E-3"
-    return "Image Powered by OpenAI DALL.E-3"
+    # return response_data["data"][0]["url"], "Image Powered by OpenAI DALL.E-3" 
+    image_url = 'https://ceccm.com.my/wp-content/uploads/2021/12/WeChat-Image_20211221142227-1.jpg'
+    image_comment = '这是个占位图像'
+    return image_url, image_comment
 
 
 def make_pic_from_bing(sentence, bing_cookie):
