@@ -243,8 +243,8 @@ def main():
         "content": full_message,
         "embeds": [
          {
-           image: {
-             url: image_url
+           "image": {
+             "url": image_url
            }
          }
        ]
