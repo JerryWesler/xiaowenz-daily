@@ -99,33 +99,33 @@ def get_poem():
 # return url, the image will not be save to local environment
 # use my own proxy url
 def make_pic_from_openai(sentence):
-    PROXY_URL = os.environ['OPENAI_PROXY_URL']
-    headers = {
-        "Authorization": f"Bearer {OPENAI_API_KEY}",
-        "Content-Type": "application/json",
-    }
+    # PROXY_URL = os.environ['OPENAI_PROXY_URL']
+    # headers = {
+    #     "Authorization": f"Bearer {OPENAI_API_KEY}",
+    #     "Content-Type": "application/json",
+    # }
     
-    body = {
-        "prompt":sentence, 
-        "n":1, 
-        "size":"1024x1024", 
-        "model":"dall-e-3", 
-        "style":"vivid"
-    }
+    # body = {
+    #     "prompt":sentence, 
+    #     "n":1, 
+    #     "size":"1024x1024", 
+    #     "model":"dall-e-3", 
+    #     "style":"vivid"
+    # }
     
-    response = requests.post(PROXY_URL, headers=headers, json=body)
+    # response = requests.post(PROXY_URL, headers=headers, json=body)
 
-    response_data = response.json()
-    print(f"Full response data: {response_data}")  # 打印完整的响应内容
+    # response_data = response.json()
+    # print(f"Full response data: {response_data}")  # 打印完整的响应内容
 
-    print(f'image_url:{response_data["data"][0]["url"]}')
-    print(f'image_revised_prompt: {response_data["data"][0]["revised_prompt"]}')
-    print(f'full response: {response_data}')
+    # print(f'image_url:{response_data["data"][0]["url"]}')
+    # print(f'image_revised_prompt: {response_data["data"][0]["revised_prompt"]}')
+    # print(f'full response: {response_data}')
 
-    return response_data["data"][0]["url"], "Image Powered by OpenAI DALL.E-3" 
-    # image_url = 'https://ceccm.com.my/wp-content/uploads/2021/12/WeChat-Image_20211221142227-1.jpg'
-    # image_comment = '这是个占位图像'
-    # return image_url, image_comment
+    # return response_data["data"][0]["url"], "Image Powered by OpenAI DALL.E-3" 
+    image_url = 'https://ceccm.com.my/wp-content/uploads/2021/12/WeChat-Image_20211221142227-1.jpg'
+    image_comment = '这是个占位图像'
+    return image_url, image_comment
 
 
 def make_pic_from_bing(sentence, bing_cookie):
@@ -193,7 +193,7 @@ def send_tg_message(tg_bot_token, tg_chat_id, message, image=None):
 
 # 发送一份给 webook
 def send_to_webhook(webhook_url, data):
-    headers = {'Content-Type': 'application/json'}
+    headers = {'Content-Type': 'multipart/form-data'}
     response = requests.post(webhook_url, json=data, headers=headers)
     print("Status Code:", response.status_code)  # 打印响应状态码
     print("Response Text:", response.text)  # 打印响应正文
@@ -239,14 +239,22 @@ def main():
 
     # 构建数据并发送到webhook
     print("Sending to webhook...")
+    response = request.get(image_url)
+    image_data = response.content
     webhook_data = {
         "embeds": [
          {
            "image": {
-             "url": image_url
+             "url": image_url,
            }
          }
        ],
+        "files":[
+            {
+                "attachment": image_data,
+                "name": poem
+            }
+        ],
         "content": full_message
     }
     webhook_response = send_to_webhook(WEBHOOK_URL, webhook_data)
