@@ -238,19 +238,18 @@ def main():
     print(r_json)
 
     # 构建数据并发送到webhook
-    webhook_url = "您的webhook URL"
+    print("Sending to webhook...")
     webhook_data = {
         "image_url": image_url,
         "message": full_message
     }
-    headers = {'Content-Type': 'application/json'}
 
-    response = requests.post(WEBHOOK_URL, data=json.dumps(webhook_data), headers=headers)
-    
-    if response.status_code >= 400:
-        print(f"Error sending to webhook: {response.status_code}, {response.text}")
+    # 检查消息是否为空
+    if not full_message.strip():
+        print("Error: The message to send is empty.")
     else:
-        print("Success:", response.text)
+        webhook_response = send_to_webhook(WEBHOOK_URL, webhook_data)
+        print(webhook_response)
 
 
 if __name__ == "__main__":
