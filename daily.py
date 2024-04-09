@@ -253,18 +253,22 @@ def main():
     # 下载图片
     response = requests.get(image_url)
     if response.status_code == 200:
-        # 将图片保存为临时文件
-        with open("temp_image.jpg", "wb") as file:
+        # 尝试从Content-Type获取文件扩展名
+        content_type = response.headers['Content-Type']
+        extension = mimetypes.guess_extension(content_type)
+        if extension:
+            filename = "temp_image" + extension
+        else:
+            filename = "temp_image.jpg"  # 默认扩展名
+    
+        # 保存图片
+        with open(filename, "wb") as file:
             file.write(response.content)
     else:
         print("Failed to download image.")
-        print("Sending to webhook...")
-    # 使用下载的图片
-    file_path = "temp_image.jpg"  # 使用下载图片的路径
-    filename = "image.jpg"  # 设置您想在 Discord 中显示的文件名
 
     # 调用发送函数
-    webhook_response = send_to_webhook_with_file(WEBHOOK_URL, full_message, file_path, poem_message)
+    webhook_response = send_to_webhook_with_file(WEBHOOK_URL, full_message, filename, poem_message)
     print(webhook_response)
     
     # webhook_data = {
