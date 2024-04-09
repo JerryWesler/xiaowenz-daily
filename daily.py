@@ -199,6 +199,18 @@ def send_to_webhook(webhook_url, data):
     print("Response Text:", response.text)  # 打印响应正文
     return response.text
 
+def send_to_webhook_with_file(webhook_url, content, file_path, filename):
+    data = {
+        'payload_json': (None, json.dumps({'content': content})),
+    }
+    files = {
+        'file': (filename, open(file_path, 'rb')),
+    }
+    response = requests.post(webhook_url, files=files, data=data)
+    print("Status Code:", response.status_code)
+    print("Response Text:", response.text)
+    return response.text
+
 # generate content from list of messages
 
 
@@ -239,25 +251,18 @@ def main():
 
     # 构建数据并发送到webhook
     print("Sending to webhook...")
-    response = requests.get(image_url)
-    image_data = response.content
     webhook_data = {
+        "content": full_message,
         "embeds": [
          {
            "image": {
              "url": image_url,
+             "description": poem_message
            }
          }
-       ],
-        "files":[
-            {
-                "attachment": image_data,
-                "name": poem_message
-            }
-        ],
-        "content": full_message
+       ]
     }
-    webhook_response = send_to_webhook(WEBHOOK_URL, webhook_data)
+    webhook_response = send_to_webhook_with_file(WEBHOOK_URL, full_message, image_url, poem_message)
     print(webhook_response)
 
 
