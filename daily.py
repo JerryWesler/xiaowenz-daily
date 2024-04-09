@@ -187,6 +187,12 @@ def send_tg_message(tg_bot_token, tg_chat_id, message, image=None):
             print(type(e), e)
             return ""
 
+# 发送一份给 webook
+def send_to_webhook(url, data):
+    headers = {'Content-Type': 'application/json'}
+    response = requests.post(url, json=data, headers=headers)
+    return response.json()  # 或根据您webhook响应的实际内容调整
+
 # generate content from list of messages
 
 
@@ -224,6 +230,15 @@ def main():
     r_json = send_tg_message(tg_bot_token=TG_BOT_TOKEN,
                              tg_chat_id=TG_CHAT_ID, message=full_message, image=image_url)
     print(r_json)
+
+    # 构建数据并发送到webhook
+    print("Sending to Webhook...")
+    webhook_data = {
+        "image_url": image_url,
+        "message": full_message
+    }
+    webhook_response = send_to_webhook(os.environ['WEBHOOK_URL'], webhook_data)
+    print(webhook_response)
 
 
 if __name__ == "__main__":
