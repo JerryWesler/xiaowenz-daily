@@ -3,6 +3,7 @@ import os
 import random
 import requests
 from openai import OpenAI
+import mimetypes
 
 import pendulum
 import requests
