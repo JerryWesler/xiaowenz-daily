@@ -239,7 +239,7 @@ def main():
 
     # 构建数据并发送到webhook
     print("Sending to webhook...")
-    response = request.get(image_url)
+    response = requests.get(image_url)
     image_data = response.content
     webhook_data = {
         "embeds": [
