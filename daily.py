@@ -240,16 +240,17 @@ def main():
     # 构建数据并发送到webhook
     print("Sending to webhook...")
     webhook_data = {
-        "image_url": image_url,
-        "message": full_message
+        "content": full_message,
+        embeds: [
+         {
+           image: {
+             url: image_url
+           }
+         }
+       ]
     }
-
-    # 检查消息是否为空
-    if not full_message.strip():
-        print("Error: The message to send is empty.")
-    else:
-        webhook_response = send_to_webhook(WEBHOOK_URL, webhook_data)
-        print(webhook_response)
+    webhook_response = send_to_webhook(WEBHOOK_URL, webhook_data)
+    print(webhook_response)
 
 
 if __name__ == "__main__":
