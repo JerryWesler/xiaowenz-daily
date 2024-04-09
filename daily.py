@@ -37,6 +37,9 @@ TIAN_API_KEY = os.environ.get('TIAN_API_KEY', '')
 BING_COOKIE = os.environ.get('BING_COOKIE', '')
 # 每日待办事项 todoist
 TODOIST_API = os.environ.get('TODOIST_API', '')
+# webhook 地址
+WEBHOOK_URL = os.environ.get('WEBHOOK_URL', '')
+
 # -------------
 
 # Message list
@@ -239,7 +242,7 @@ def main():
         "image_url": image_url,
         "message": full_message
     }
-    webhook_response = send_to_webhook(os.environ['WEBHOOK_URL'], full_message)
+    webhook_response = send_to_webhook(WEBHOOK_URL, full_message)
     print(webhook_response)
 
 
