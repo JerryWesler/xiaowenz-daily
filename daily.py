@@ -11,6 +11,7 @@ from BingImageCreator import ImageGen
 
 from quota import make_quota
 from todoist import make_todoist
+import json
 
 load_dotenv()
 
@@ -237,13 +238,19 @@ def main():
     print(r_json)
 
     # 构建数据并发送到webhook
-    print("Sending to Webhook...")
+    webhook_url = "您的webhook URL"
     webhook_data = {
         "image_url": image_url,
         "message": full_message
     }
-    webhook_response = send_to_webhook(WEBHOOK_URL, full_message)
-    print(webhook_response)
+    headers = {'Content-Type': 'application/json'}
+
+    response = requests.post(WEBHOOK_URL, data=json.dumps(webhook_data), headers=headers)
+    
+    if response.status_code >= 400:
+        print(f"Error sending to webhook: {response.status_code}, {response.text}")
+    else:
+        print("Success:", response.text)
 
 
 if __name__ == "__main__":
