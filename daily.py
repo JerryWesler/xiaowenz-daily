@@ -241,7 +241,7 @@ def main():
     print("Sending to webhook...")
     webhook_data = {
         "content": full_message,
-        embeds: [
+        "embeds": [
          {
            image: {
              url: image_url
