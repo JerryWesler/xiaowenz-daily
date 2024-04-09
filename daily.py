@@ -188,10 +188,12 @@ def send_tg_message(tg_bot_token, tg_chat_id, message, image=None):
             return ""
 
 # 发送一份给 webook
-def send_to_webhook(url, data):
+def send_to_webhook(webhook_url, data):
     headers = {'Content-Type': 'application/json'}
-    response = requests.post(url, json=data, headers=headers)
-    return response.json()  # 或根据您webhook响应的实际内容调整
+    response = requests.post(webhook_url, json=data, headers=headers)
+    print("Status Code:", response.status_code)  # 打印响应状态码
+    print("Response Text:", response.text)  # 打印响应正文
+    return response.text
 
 # generate content from list of messages
 
