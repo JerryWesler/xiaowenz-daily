@@ -100,33 +100,33 @@ def get_poem():
 # return url, the image will not be save to local environment
 # use my own proxy url
 def make_pic_from_openai(sentence):
-    # PROXY_URL = os.environ['OPENAI_PROXY_URL']
-    # headers = {
-    #     "Authorization": f"Bearer {OPENAI_API_KEY}",
-    #     "Content-Type": "application/json",
-    # }
+    PROXY_URL = os.environ['OPENAI_PROXY_URL']
+    headers = {
+        "Authorization": f"Bearer {OPENAI_API_KEY}",
+        "Content-Type": "application/json",
+    }
     
-    # body = {
-    #     "prompt":sentence, 
-    #     "n":1, 
-    #     "size":"1024x1024", 
-    #     "model":"dall-e-3", 
-    #     "style":"vivid"
-    # }
+    body = {
+        "prompt":sentence, 
+        "n":1, 
+        "size":"1024x1024", 
+        "model":"dall-e-3", 
+        "style":"vivid"
+    }
     
-    # response = requests.post(PROXY_URL, headers=headers, json=body)
+    response = requests.post(PROXY_URL, headers=headers, json=body)
 
-    # response_data = response.json()
-    # print(f"Full response data: {response_data}")  # 打印完整的响应内容
+    response_data = response.json()
+    print(f"Full response data: {response_data}")  # 打印完整的响应内容
 
-    # print(f'image_url:{response_data["data"][0]["url"]}')
-    # print(f'image_revised_prompt: {response_data["data"][0]["revised_prompt"]}')
-    # print(f'full response: {response_data}')
+    print(f'image_url:{response_data["data"][0]["url"]}')
+    print(f'image_revised_prompt: {response_data["data"][0]["revised_prompt"]}')
+    print(f'full response: {response_data}')
 
-    # return response_data["data"][0]["url"], "Image Powered by OpenAI DALL.E-3" 
-    image_url = 'https://ceccm.com.my/wp-content/uploads/2021/12/WeChat-Image_20211221142227-1.jpg'
-    image_comment = '这是个占位图像'
-    return image_url, image_comment
+    return response_data["data"][0]["url"], "Image Powered by OpenAI DALL.E-3" 
+    # image_url = 'https://ceccm.com.my/wp-content/uploads/2021/12/WeChat-Image_20211221142227-1.jpg'
+    # image_comment = '这是个占位图像'
+    # return image_url, image_comment
 
 
 def make_pic_from_bing(sentence, bing_cookie):
@@ -193,23 +193,11 @@ def send_tg_message(tg_bot_token, tg_chat_id, message, image=None):
             return ""
 
 # 发送一份给 webook
-def send_to_webhook(webhook_url, data):
-    headers = {'Content-Type': 'multipart/form-data'}
-    response = requests.post(webhook_url, json=data, headers=headers)
+def send_to_webhook(data):
+    headers = {'Content-Type': 'application/json'}
+    response = requests.post(WEBHOOK_URL, json=data, headers=headers)
     print("Status Code:", response.status_code)  # 打印响应状态码
     print("Response Text:", response.text)  # 打印响应正文
-    return response.text
-
-def send_to_webhook_with_file(webhook_url, content, file_path, filename):
-    data = {
-        'payload_json': (None, json.dumps({'content': content})),
-    }
-    files = {
-        'file': (filename, open(file_path, 'rb')),
-    }
-    response = requests.post(webhook_url, files=files, data=data)
-    print("Status Code:", response.status_code)
-    print("Response Text:", response.text)
     return response.text
 
 # generate content from list of messages
@@ -251,40 +239,19 @@ def main():
     print(r_json)
 
     # 构建数据并发送到webhook
-    # 下载图片
-    response = requests.get(image_url)
-    if response.status_code == 200:
-        # 尝试从Content-Type获取文件扩展名
-        content_type = response.headers['Content-Type']
-        extension = mimetypes.guess_extension(content_type)
-        if extension:
-            filename = "temp_image" + extension
-        else:
-            filename = "temp_image.jpg"  # 默认扩展名
-    
-        # 保存图片
-        with open(filename, "wb") as file:
-            file.write(response.content)
-    else:
-        print("Failed to download image.")
-
-    # 调用发送函数
-    webhook_response = send_to_webhook_with_file(WEBHOOK_URL, full_message, filename, poem_message)
+    webhook_data = {
+        "content": full_message,
+        "embeds": [
+         {
+           "image": {
+             "url": image_url,
+             "description": poem_message
+           }
+         }
+       ]
+    }
+    webhook_response = send_to_webhook(webhook_data)
     print(webhook_response)
-    
-    # webhook_data = {
-    #     "content": full_message,
-    #     "embeds": [
-    #      {
-    #        "image": {
-    #          "url": image_url,
-    #          "description": poem_message
-    #        }
-    #      }
-    #    ]
-    # }
-    # webhook_response = send_to_webhook_with_file(WEBHOOK_URL, full_message, image_url, poem_message)
-    # print(webhook_response)
 
 
 if __name__ == "__main__":
