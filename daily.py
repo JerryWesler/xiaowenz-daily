@@ -239,7 +239,7 @@ def main():
         "image_url": image_url,
         "message": full_message
     }
-    webhook_response = send_to_webhook(os.environ['WEBHOOK_URL'], webhook_data)
+    webhook_response = send_to_webhook(os.environ['WEBHOOK_URL'], full_message)
     print(webhook_response)
 
 
