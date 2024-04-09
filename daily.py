@@ -252,7 +252,7 @@ def main():
         "files":[
             {
                 "attachment": image_data,
-                "name": poem
+                "name": poem_message
             }
         ],
         "content": full_message
