@@ -243,9 +243,10 @@ def main():
         "content": full_message,
         "embeds": [
          {
-           "image": {
-             "url": image_url
-           }
+           "title": "Download it",
+           "url": image_url,
+           "image": { "url": image_url },
+           "description": poem_message"[here](image_url)."
          }
        ]
     }
