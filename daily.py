@@ -45,7 +45,7 @@ WEBHOOK_URL = os.environ.get('WEBHOOK_URL', '')
 # -------------
 
 # Message list
-MESSAGES = ['又到了新的一天了！']
+MESSAGES = ['又到了新的一天了！ :wave:']
 
 
 # get today's weather
@@ -239,16 +239,23 @@ def main():
     print(r_json)
 
     # 构建数据并发送到webhook
+    # 去除固定内容
+    poem_message = poem_message.replace("今日诗词和配图：", "").strip()
     webhook_data = {
         "content": full_message,
         "embeds": [
          {
-           "title": "Download it",
-           "url": image_url,
            "image": { "url": image_url },
-            "description": f"{poem_message} [here]({image_url})."
+             # f"{poem_message} [here]({image_url}). Your fixed content can go here."
+           "description": poem_message,
+           "title": "Download it",
+           "url": image_url
          }
-       ]
+       ],
+        "footer": {
+        "text": "Download it.",
+        "icon_url": image_url
+      }
     }
     webhook_response = send_to_webhook(webhook_data)
     print(webhook_response)
