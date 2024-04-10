@@ -45,7 +45,7 @@ WEBHOOK_URL = os.environ.get('WEBHOOK_URL', '')
 # -------------
 
 # Message list
-MESSAGES = ['又到了新的一天了！ :wave:']
+MESSAGES = ['又到了新的一天了！']
 
 
 # get today's weather
@@ -242,7 +242,7 @@ def main():
     # 去除固定内容
     poem_message = poem_message.replace("今日诗词和配图：", "").strip()
     webhook_data = {
-        "content": full_message,
+        "content": f" :wave:{poem_message}",
         "embeds": [
          {
            "image": { "url": image_url },
