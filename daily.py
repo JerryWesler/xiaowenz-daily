@@ -241,15 +241,15 @@ def main():
     # 构建数据并发送到webhook
     # 去除固定内容
     poem_message = poem_message.replace("今日诗词和配图：", "").strip()
+    full_message = full_message.replace(poem_message, "").strip()
     webhook_data = {
-        "content": f" :wave:{poem_message}",
+        "content": f" :wave:{full_message}",
         "embeds": [
          {
            "image": { "url": image_url },
              # f"{poem_message} [here]({image_url}). Your fixed content can go here."
            "title": poem_message,
-           "description": "Download it",
-           "url": image_url
+           "text": f"[here]({image_url})"
          }
        ]
     }
