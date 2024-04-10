@@ -240,7 +240,7 @@ def main():
 
     # 构建数据并发送到webhook
     # 去除固定内容
-    full_message = full_message.replace(f"{poem_message}\r\n---", "").strip()
+    full_message = full_message.replace(f"{poem_message}\r\n---\r\n", "").strip()
     poem_message = poem_message.replace("今日诗词和配图：", "").strip()
     webhook_data = {
         "content": f":wave:{full_message}",
